@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 
 import javax.net.ssl.SSLException;
 
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Interceptor;
@@ -20,7 +21,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-class HTTPContext {
+public class HTTPContext {
+
+    public interface ResponseListener {
+        void onResponse(Response response);
+    }
 
     private static final int CONNECTION_ERROR = 0;
     private static final int TEMPORARY_ERROR = 1;
@@ -29,12 +34,25 @@ class HTTPContext {
 
     private static HTTPContext mInstance = null;
 
-    private OkHttpClient mClient;
+    private static OkHttpClient mClient;
+    private static ResponseListener sResponseListener = null;
+    private static boolean sOfflineConfig = false;
 
     private HTTPContext() {
         super();
         mClient = new OkHttpClient();
         //mClient.interceptors().add(new LoggingInterceptor());
+    }
+
+    public static void initOffline(OkHttpClient okHttpClient, ResponseListener responseListener) {
+        if (mInstance == null) {
+            sOfflineConfig = true;
+            mInstance = new HTTPContext();
+            mClient = okHttpClient;
+            sResponseListener = responseListener;
+        } else {
+            throw new IllegalStateException("already initialised!");
+        }
     }
 
     public static HTTPContext getInstance() {
@@ -63,6 +81,12 @@ class HTTPContext {
         private HTTPRequest(long nativePtr, String resourceUrl, String userAgent, String etag, String modified) {
             mNativePtr = nativePtr;
             Request.Builder builder = new Request.Builder().url(resourceUrl).tag(resourceUrl.toLowerCase(MapboxConstants.MAPBOX_LOCALE)).addHeader("User-Agent", userAgent);
+            if (sOfflineConfig) {
+                builder.cacheControl(CacheControl.FORCE_NETWORK);
+                mRequest = builder.build();
+                return;
+            }
+
             if (etag.length() > 0) {
                 builder = builder.addHeader("If-None-Match", etag);
             } else if (modified.length() > 0) {
@@ -82,6 +106,13 @@ class HTTPContext {
 
         @Override
         public void onResponse(Call call, Response response) throws IOException {
+            if (sOfflineConfig) {
+                boolean hasResponseListener = sResponseListener != null;
+                if (hasResponseListener) {
+                    sResponseListener.onResponse(response);
+                }
+            }
+
             if (response.isSuccessful()) {
                 Log.d(LOG_TAG, String.format("[HTTP] Request was successful (code = %d).", response.code()));
             } else {
