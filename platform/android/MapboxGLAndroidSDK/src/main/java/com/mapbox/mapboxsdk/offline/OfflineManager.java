@@ -6,6 +6,8 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.mapbox.mapboxsdk.StorageUtil;
+
 import java.io.File;
 
 /**
@@ -88,7 +90,8 @@ public class OfflineManager {
 
     private OfflineManager(Context context) {
         // Get a pointer to the DefaultFileSource instance
-        String assetRoot = context.getFilesDir().getAbsolutePath();
+        File store = StorageUtil.getStorageDirectory(context);
+        String assetRoot = store.getAbsolutePath();
         String cachePath = assetRoot  + File.separator + DATABASE_NAME;
         mDefaultFileSourcePtr = createDefaultFileSource(cachePath, assetRoot, DEFAULT_MAX_CACHE_SIZE);
 
