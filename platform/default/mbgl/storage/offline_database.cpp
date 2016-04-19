@@ -178,12 +178,12 @@ std::pair<bool, uint64_t> OfflineDatabase::putInternal(const Resource& resource,
 }
 
 optional<std::pair<Response, uint64_t>> OfflineDatabase::getResource(const Resource& resource) {
-    Statement accessedStmt = getStatement(
-        "UPDATE resources SET accessed = ?1 WHERE url = ?2");
-
-    accessedStmt->bind(1, util::now());
-    accessedStmt->bind(2, resource.url);
-    accessedStmt->run();
+    // Statement accessedStmt = getStatement(
+    //     "UPDATE resources SET accessed = ?1 WHERE url = ?2");
+    //
+    // accessedStmt->bind(1, util::now());
+    // accessedStmt->bind(2, resource.url);
+    // accessedStmt->run();
 
     Statement stmt = getStatement(
         //        0      1        2       3        4
@@ -300,22 +300,22 @@ bool OfflineDatabase::putResource(const Resource& resource,
 }
 
 optional<std::pair<Response, uint64_t>> OfflineDatabase::getTile(const Resource::TileData& tile) {
-    Statement accessedStmt = getStatement(
-        "UPDATE tiles "
-        "SET accessed       = ?1 "
-        "WHERE url_template = ?2 "
-        "  AND pixel_ratio  = ?3 "
-        "  AND x            = ?4 "
-        "  AND y            = ?5 "
-        "  AND z            = ?6 ");
-
-    accessedStmt->bind(1, util::now());
-    accessedStmt->bind(2, tile.urlTemplate);
-    accessedStmt->bind(3, tile.pixelRatio);
-    accessedStmt->bind(4, tile.x);
-    accessedStmt->bind(5, tile.y);
-    accessedStmt->bind(6, tile.z);
-    accessedStmt->run();
+    // Statement accessedStmt = getStatement(
+    //     "UPDATE tiles "
+    //     "SET accessed       = ?1 "
+    //     "WHERE url_template = ?2 "
+    //     "  AND pixel_ratio  = ?3 "
+    //     "  AND x            = ?4 "
+    //     "  AND y            = ?5 "
+    //     "  AND z            = ?6 ");
+    //
+    // accessedStmt->bind(1, util::now());
+    // accessedStmt->bind(2, tile.urlTemplate);
+    // accessedStmt->bind(3, tile.pixelRatio);
+    // accessedStmt->bind(4, tile.x);
+    // accessedStmt->bind(5, tile.y);
+    // accessedStmt->bind(6, tile.z);
+    // accessedStmt->run();
 
     Statement stmt = getStatement(
         //        0      1        2       3        4
@@ -363,24 +363,24 @@ bool OfflineDatabase::putTile(const Resource::TileData& tile,
                               const std::string& data,
                               bool compressed) {
     if (response.notModified) {
-        Statement update = getStatement(
-            "UPDATE tiles "
-            "SET accessed       = ?1, "
-            "    expires        = ?2 "
-            "WHERE url_template = ?3 "
-            "  AND pixel_ratio  = ?4 "
-            "  AND x            = ?5 "
-            "  AND y            = ?6 "
-            "  AND z            = ?7 ");
-
-        update->bind(1, util::now());
-        update->bind(2, response.expires);
-        update->bind(3, tile.urlTemplate);
-        update->bind(4, tile.pixelRatio);
-        update->bind(5, tile.x);
-        update->bind(6, tile.y);
-        update->bind(7, tile.z);
-        update->run();
+        // Statement update = getStatement(
+        //     "UPDATE tiles "
+        //     "SET accessed       = ?1, "
+        //     "    expires        = ?2 "
+        //     "WHERE url_template = ?3 "
+        //     "  AND pixel_ratio  = ?4 "
+        //     "  AND x            = ?5 "
+        //     "  AND y            = ?6 "
+        //     "  AND z            = ?7 ");
+        //
+        // update->bind(1, util::now());
+        // update->bind(2, response.expires);
+        // update->bind(3, tile.urlTemplate);
+        // update->bind(4, tile.pixelRatio);
+        // update->bind(5, tile.x);
+        // update->bind(6, tile.y);
+        // update->bind(7, tile.z);
+        // update->run();
         return false;
     }
 
