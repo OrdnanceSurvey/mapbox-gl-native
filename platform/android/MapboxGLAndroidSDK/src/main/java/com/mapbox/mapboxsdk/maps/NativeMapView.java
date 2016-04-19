@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.view.Surface;
 
+import com.mapbox.mapboxsdk.StorageUtil;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.Polygon;
 import com.mapbox.mapboxsdk.annotations.Polyline;
@@ -50,7 +51,8 @@ final class NativeMapView {
 
     public NativeMapView(MapView mapView) {
         Context context = mapView.getContext();
-        String dataPath = context.getFilesDir().getAbsolutePath();
+        //String dataPath = context.getFilesDir().getAbsolutePath();
+        String dataPath = StorageUtil.getStorageDirectory(context).getAbsolutePath();
 
         // With the availability of offline, we're unifying the ambient (cache) and the offline
         // databases to be in the same folder, outside cache, to avoid automatic deletion from
