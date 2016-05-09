@@ -11,7 +11,7 @@ public class StorageUtil {
 
     public static File getStorageDirectory(Context context) {
         if (mStorageDirectory == null) {
-            mStorageDirectory = context.getExternalCacheDir();
+            mStorageDirectory = context.getExternalFilesDir(null);
             if (mStorageDirectory == null) {
                 mStorageDirectory = context.getFilesDir();
             }
