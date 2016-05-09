@@ -18,6 +18,7 @@ import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -496,25 +497,30 @@ public class MapboxEventManager {
         }
     }
 
+    @SuppressWarnings({"MissingPermission"})
     public Boolean getConnectedToWifi() {
+        boolean hasWifiPermission = ContextCompat.checkSelfPermission(context,
+                "android.permission.ACCESS_WIFI_STATE") == PackageManager.PERMISSION_GRANTED;
 
         Boolean status = false;
-        WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        if (wifiMgr.isWifiEnabled()) {
-            try {
-                WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
-                if (wifiInfo.getNetworkId() != -1){
-                    status = true;
+        if (hasWifiPermission) {
+            WifiManager wifiMgr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+            if (wifiMgr.isWifiEnabled()) {
+                try {
+                    WifiInfo wifiInfo = wifiMgr.getConnectionInfo();
+                    if (wifiInfo.getNetworkId() != -1){
+                        status = true;
+                    }
+                } catch (Exception e) {
+                    Log.w(TAG, "Error getting Wifi Connection Status: " + e);
+                    status = false;
                 }
-            } catch (Exception e) {
-                Log.w(TAG, "Error getting Wifi Connection Status: " + e);
-                status = false;
             }
+        } else {
+            Log.d(TAG, "No android.permission.ACCESS_WIFI_STATE permission - assuming no wifi");
         }
-
         return status;
     }
-
 
     /**
      * Task responsible for converting stored events and sending them to the server
@@ -526,6 +532,13 @@ public class MapboxEventManager {
 
              if (events.size() < 1) {
                 Log.d(TAG, "No events in the queue to send so returning.");
+                return null;
+            }
+
+            boolean hasNetworkPermission = ContextCompat.checkSelfPermission(context,
+                    "android.permission.ACCESS_NETWORK_STATE") == PackageManager.PERMISSION_GRANTED;
+            if (!hasNetworkPermission) {
+                Log.d(TAG, "No network permission, so returning without attempting to send events");
                 return null;
             }
 

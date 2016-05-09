@@ -447,6 +447,9 @@ final class NativeMapView {
     }
 
     public void setReachability(boolean status) {
+        if (status == true) {
+            throw new IllegalStateException("Impossible!!!");
+        }
         nativeSetReachability(mNativeMapViewPtr, status);
     }
 

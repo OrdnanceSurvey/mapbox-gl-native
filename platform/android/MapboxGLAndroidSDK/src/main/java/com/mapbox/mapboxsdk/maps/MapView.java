@@ -111,6 +111,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MapView extends FrameLayout {
 
+    private static final boolean OFFLINE = true;
+
     private MapboxMap mMapboxMap;
     private List<Icon> mIcons;
 
@@ -212,8 +214,10 @@ public class MapView extends FrameLayout {
         mZoomButtonsController.setZoomSpeed(MapboxConstants.ANIMATION_DURATION);
         mZoomButtonsController.setOnZoomListener(new OnZoomListener());
 
-        // Connectivity
-        onConnectivityChanged(isConnected());
+        if (!OFFLINE) {
+            // Connectivity
+            onConnectivityChanged(isConnected());
+        }
 
         mUserLocationView = (UserLocationView) view.findViewById(R.id.userLocationView);
         mUserLocationView.setMapboxMap(mMapboxMap);
@@ -501,9 +505,11 @@ public class MapView extends FrameLayout {
      */
     @UiThread
     public void onPause() {
-        // Register for connectivity changes
-        getContext().unregisterReceiver(mConnectivityReceiver);
-        mConnectivityReceiver = null;
+        if (!OFFLINE) {
+            // Register for connectivity changes
+            getContext().unregisterReceiver(mConnectivityReceiver);
+            mConnectivityReceiver = null;
+        }
 
         mUserLocationView.onPause();
         mNativeMapView.pause();
@@ -515,8 +521,10 @@ public class MapView extends FrameLayout {
     @UiThread
     public void onResume() {
         // Register for connectivity changes
-        mConnectivityReceiver = new ConnectivityReceiver();
-        getContext().registerReceiver(mConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        if (!OFFLINE) {
+            mConnectivityReceiver = new ConnectivityReceiver();
+            getContext().registerReceiver(mConnectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
 
         mNativeMapView.resume();
         mNativeMapView.update();

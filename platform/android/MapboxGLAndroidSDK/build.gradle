@@ -1,4 +1,4 @@
-apply plugin: 'android-sdk-manager'
+//apply plugin: 'android-sdk-manager'
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
 apply plugin: 'maven'
@@ -18,7 +18,7 @@ repositories {
 }
 
 ext {
-    supportLibVersion = '23.1.1'
+    supportLibVersion = '23.3.0'
 }
 
 dependencies {
