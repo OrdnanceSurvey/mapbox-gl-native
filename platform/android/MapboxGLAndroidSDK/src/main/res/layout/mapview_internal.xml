@@ -11,23 +11,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <ImageView
-        android:id="@+id/logoView"
+    <!-- Note: credit must be made elsewhere -->
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/mapboxIconContentDescription"
-        android:src="@drawable/attribution_logo" />
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/logoView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/mapboxIconContentDescription"
+            android:src="@drawable/attribution_logo" />
 
-    <ImageView
-        android:id="@+id/attributionView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:clickable="true"
-        android:contentDescription="@string/attributionsIconContentDescription"
-        android:padding="7dp"
-        android:src="@drawable/ic_info_outline_24dp_selector"
-        android:background="@drawable/bg_default_selector"/>
+        <ImageView
+            android:id="@+id/attributionView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:clickable="true"
+            android:contentDescription="@string/attributionsIconContentDescription"
+            android:padding="7dp"
+            android:src="@drawable/ic_info_outline_24dp_selector"
+            android:background="@drawable/bg_default_selector"/>
+    </FrameLayout>
 
     <com.mapbox.mapboxsdk.maps.widgets.UserLocationView
         android:id="@+id/userLocationView"
