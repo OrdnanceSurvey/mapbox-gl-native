@@ -172,6 +172,15 @@ public class MapView extends FrameLayout {
         initialize(context, options);
     }
 
+    public interface OnZoomChangeListener {
+        void onZoom();
+    }
+
+    private OnZoomChangeListener mZoomChangeListener;
+    public void setZoomChangeListener(OnZoomChangeListener zoomChangeListener) {
+        mZoomChangeListener = zoomChangeListener;
+    }
+
     private void initialize(@NonNull Context context, @NonNull MapboxMapOptions options) {
         mInitialLoad = true;
         mOnMapReadyCallbackList = new ArrayList<>();
@@ -1470,6 +1479,10 @@ public class MapView extends FrameLayout {
                 if (mScrollInProgress) {
                     trackGestureDragEndEvent(event.getX(), event.getY());
                     mScrollInProgress = false;
+                    // TODO raise issue upstream - this is a shocking hack!
+                    if (mZoomChangeListener != null) {
+                        mZoomChangeListener.onZoom();
+                    }
                 }
 
                 mTwoTap = false;
@@ -1769,6 +1782,11 @@ public class MapView extends FrameLayout {
                     PointF centerPoint = mUserLocationView.getMarkerScreenPoint();
                     mNativeMapView.scaleBy(detector.getScaleFactor(), centerPoint.x / mScreenDensity, centerPoint.y / mScreenDensity);
                 }
+            }
+
+            // TODO raise issue upstream - this is a shocking hack!
+            if (mZoomChangeListener != null) {
+                mZoomChangeListener.onZoom();
             }
             return true;
         }
