@@ -281,6 +281,8 @@ void OnlineFileRequest::schedule(optional<Timestamp> expires) {
         failedRequestReason = Response::Error::Reason::Connection;
         failedRequests = 1;
         timeout = Duration::max();
+        // TODO: remove if android timer honours Duration::max()
+        return;
     }
 
     timer.start(timeout, Duration::zero(), [&] {
