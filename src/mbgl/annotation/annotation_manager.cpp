@@ -60,7 +60,7 @@ void AnnotationManager::removeAnnotation(const AnnotationID& id) {
         obsoleteShapeAnnotationLayers.insert(shapeAnnotations.at(id)->layerID);
         shapeAnnotations.erase(id);
     } else {
-        assert(false); // Should never happen
+        //assert(false); // Should never happen
     }
 }
 

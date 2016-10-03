@@ -112,6 +112,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MapView extends FrameLayout {
 
+    public static final boolean OFFLINE = true;
+
     private MapboxMap mapboxMap;
     private boolean initialLoad;
     private boolean destroyed;
@@ -225,7 +227,9 @@ public class MapView extends FrameLayout {
         zoomButtonsController.setOnZoomListener(new OnZoomListener());
 
         // Connectivity
-        onConnectivityChanged(isConnected());
+        if (!OFFLINE) {
+            onConnectivityChanged(isConnected());
+        }
 
         markerViewContainer = (ViewGroup) view.findViewById(R.id.markerViewContainer);
 
@@ -565,10 +569,12 @@ public class MapView extends FrameLayout {
      */
     @UiThread
     public void onPause() {
-        // Register for connectivity changes
-        if (connectivityReceiver != null) {
-            getContext().unregisterReceiver(connectivityReceiver);
-            connectivityReceiver = null;
+        if (!OFFLINE) {
+            // Register for connectivity changes
+            if (connectivityReceiver != null) {
+                getContext().unregisterReceiver(connectivityReceiver);
+                connectivityReceiver = null;
+            }
         }
 
         myLocationView.onPause();
@@ -579,9 +585,12 @@ public class MapView extends FrameLayout {
      */
     @UiThread
     public void onResume() {
-        // Register for connectivity changes
-        connectivityReceiver = new ConnectivityReceiver();
-        getContext().registerReceiver(connectivityReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        if (!OFFLINE) {
+            // Register for connectivity changes
+            connectivityReceiver = new ConnectivityReceiver();
+            getContext().registerReceiver(connectivityReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
 
         nativeMapView.update();
         myLocationView.onResume();
@@ -2460,6 +2469,9 @@ public class MapView extends FrameLayout {
 
     // Called when our Internet connectivity has changed
     private void onConnectivityChanged(boolean isConnected) {
+        if (isConnected) {
+            throw new IllegalStateException("Impossible!");
+        }
         nativeMapView.setReachability(isConnected);
     }
 

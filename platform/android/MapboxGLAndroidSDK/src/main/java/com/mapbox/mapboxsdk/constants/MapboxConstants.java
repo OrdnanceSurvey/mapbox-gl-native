@@ -35,6 +35,7 @@ public class MapboxConstants {
      */
     public final static String KEY_META_DATA_SET_STORAGE_EXTERNAL = "com.mapbox.SetStorageExternal";
 
+    // Changed in the Manifest
     /**
      * Default value for KEY_META_DATA_SET_STORAGE_EXTERNAL (default is internal storage)
      */

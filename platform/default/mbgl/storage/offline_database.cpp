@@ -11,6 +11,8 @@
 
 namespace mbgl {
 
+const bool ONLINE = false;
+
 OfflineDatabase::Statement::~Statement() {
     stmt.reset();
     stmt.clearBindings();
@@ -192,6 +194,9 @@ std::pair<bool, uint64_t> OfflineDatabase::putInternal(const Resource& resource,
 }
 
 optional<std::pair<Response, uint64_t>> OfflineDatabase::getResource(const Resource& resource) {
+
+    if (ONLINE) {
+
     // clang-format off
     Statement accessedStmt = getStatement(
         "UPDATE resources SET accessed = ?1 WHERE url = ?2");
@@ -200,6 +205,7 @@ optional<std::pair<Response, uint64_t>> OfflineDatabase::getResource(const Resou
     accessedStmt->bind(1, util::now());
     accessedStmt->bind(2, resource.url);
     accessedStmt->run();
+    }
 
     // clang-format off
     Statement stmt = getStatement(
@@ -324,6 +330,8 @@ bool OfflineDatabase::putResource(const Resource& resource,
 }
 
 optional<std::pair<Response, uint64_t>> OfflineDatabase::getTile(const Resource::TileData& tile) {
+
+    if (ONLINE) {
     // clang-format off
     Statement accessedStmt = getStatement(
         "UPDATE tiles "
@@ -342,6 +350,7 @@ optional<std::pair<Response, uint64_t>> OfflineDatabase::getTile(const Resource:
     accessedStmt->bind(5, tile.y);
     accessedStmt->bind(6, tile.z);
     accessedStmt->run();
+    }
 
     // clang-format off
     Statement stmt = getStatement(
@@ -390,6 +399,11 @@ bool OfflineDatabase::putTile(const Resource::TileData& tile,
                               const Response& response,
                               const std::string& data,
                               bool compressed) {
+
+    if (!ONLINE) {
+        return false;
+    }
+
     if (response.notModified) {
         // clang-format off
         Statement update = getStatement(
